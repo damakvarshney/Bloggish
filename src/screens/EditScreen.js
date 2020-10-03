@@ -1,17 +1,27 @@
-import React from "react";
-import { View, StyleSheet, Text } from "react-native";
+import React, { useContext, useState } from "react";
+import { Context } from "../context/BlogContext";
+import BlogPostForm from "./../component/BlogPostForm";
 
-const EditScreen = () => {
+const EditScreen = ({ navigation }) => {
+  const { state, editBlogPost } = useContext(Context);
+  const id = navigation.getParam("id");
+  const blogPost = state.find((blogPost) => blogPost.id === id);
+  const [title, setTitle] = useState(blogPost.title);
+  const [content, setContent] = useState(blogPost.content);
+
   return (
-    <View style={styles.container}>
-      <Text>EditScreen</Text>
-    </View>
+    <BlogPostForm
+      title={title}
+      onTitleChange={(title) => setTitle(title)}
+      onContentChange={(content) => setContent(content)}
+      content={content}
+      onPress={() => {
+        editBlogPost(id, title, content, () => {
+          navigation.pop();
+        });
+      }}
+    />
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default EditScreen;
