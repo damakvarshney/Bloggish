@@ -6,9 +6,9 @@ import { Context } from "./../context/BlogContext";
 import { MaterialIcons } from "@expo/vector-icons";
 
 const ShowScreen = ({ navigation }) => {
-  const id = navigation.getParam("id");
-  const { state, addBlogPost } = useContext(Context);
-  const blogPost = state.find((blogPost) => blogPost.id === id);
+  const blogPost = navigation.getParam("blogPost");
+  const { state } = useContext(Context);
+  // const blogPost = state.find((blogPost) => blogPost.id === id);
 
   return (
     <View style={styles.container}>
@@ -25,7 +25,9 @@ ShowScreen.navigationOptions = ({ navigation }) => {
     headerRight: () => (
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate("Edit", { id: navigation.getParam("id") })
+          navigation.navigate("Edit", {
+            blogPost: navigation.getParam("blogPost"),
+          })
         }
       >
         <MaterialIcons name="edit" size={30} style={{ padding: 10 }} />

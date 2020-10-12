@@ -1,33 +1,45 @@
-import React, { useContext } from "react";
-import { View, StyleSheet, Text, FlatList, Button } from "react-native";
+import React, { useContext, useEffect } from "react";
+import { View, StyleSheet, FlatList } from "react-native";
 import { Context } from "../context/BlogContext";
 import { Feather } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import AppButton from "./../component/AppButton";
-
-// import {Context} from "../context/ImageContext";
 import ListItem from "./../component/lists/ListItem";
 import ListItemSeparator from "./../component/lists/ListItemSeparator";
 import ListItemDeleteAction from "./../component/lists/ListItemDeleteAction";
+import NavigationService from "../context/NavigationService";
 
 const IndexScreen = ({ navigation }) => {
-  const { state, addBlogPost, deleteBlogPost } = useContext(Context);
+  const { state, getBlogPost, deleteBlogPost } = useContext(Context);
+
+  useEffect(() => {
+    getBlogPost();
+    const listener = navigation.addListener("didFocus", () => {
+      getBlogPost();
+    });
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
       <FlatList
         data={state}
         ItemSeparatorComponent={ListItemSeparator}
-        key={(blogPost, index) => index.toString()}
-        renderItem={({ item }) => {
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => {
           return (
             <ListItem
               materialIconName="chevron-right"
-              title={item.title}
+              title={item[index].title}
               renderRightActions={() => (
-                <ListItemDeleteAction onPress={() => deleteBlogPost(item.id)} />
+                <ListItemDeleteAction
+                  onPress={() => deleteBlogPost(item[index].id)}
+                />
               )}
-              onPress={() => navigation.navigate("Show", { id: item.id })}
+              onPress={() =>
+                NavigationService.navigate("Show", { blogPost: item[index] })
+              }
             />
           );
         }}
